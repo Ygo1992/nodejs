@@ -3,7 +3,6 @@ const rota = express.Router();
 const Usuarios = require('../model/usuarios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-//const config = require('../config/config');
 require('dotenv').config();
 
 const criarTokenUsuario = (idUsuario) => {

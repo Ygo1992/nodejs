@@ -2,11 +2,11 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const config = require('./config/config');
+require('dotenv').config();
 
 
 
-const url = config.bd_string;
+const url = process.env.APP_DB_URL;
 
 const opcoes = { 
     useUnifiedTopology: true, //falhas mais rápidas e mapeadas de maneira melhorada
