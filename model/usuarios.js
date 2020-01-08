@@ -9,14 +9,12 @@ const UsuarioSchema = new Schema({
 });
 
 //Não usar o arrow function, pois ao utilizar o this dentro não funciona
-UsuarioSchema.pre('save', function(next) {
+UsuarioSchema.pre('save', async function(next) {
     let usuario = this;
     if(!usuario.isModified('senha')) return next();
 
-    bcrypt.hash(usuario.senha, 10, (erro, senhaEncriptada) => {
-        usuario.senha = senhaEncriptada;
-        return next();
-    });
+    usuario.senha = await bcrypt.hash(usuario.senha, 10);
+    return next();
 });
 
 module.exports = mongoose.model('Usuario', UsuarioSchema);

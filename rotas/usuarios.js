@@ -3,48 +3,50 @@ const rota = express.Router();
 const Usuarios = require('../model/usuarios');
 const bcrypt = require('bcrypt');
 
-rota.get('/', (req, res) => {
-    Usuarios.find({}, (erro, data) => {
-        if(erro) return res.send({ error: 'Erro ao buscar usuarios'});
-        return res.send(data);
-    });
+rota.get('/', async (req, res) => {
+    try {
+        const usuarios = await Usuarios.find({});
+        return res.send(usuarios);
+    } catch (erro) {
+        return res.send({ error: 'Erro ao buscar usuarios'});
+    }
 });
 
-rota.post('/criar', (req, res) => {
-    const {email, senha} = req.body;//se o body possuir email e senha o JS já cria as consts email e senha com os valores
-    console.log(req);
+rota.post('/criar', async (req, res) => {
+    const {email, senha} = req.body;
+    
     if(!email || !senha)
         return res.send({ error: 'Dados insuficientes'});
 
-    //pode ser reescrito para "Usuarios.findOne({ email });" pois possuem o msm nome
-    Usuarios.findOne({ email: email }, (erro, data) => {//Busca Usuário e verifica se deu erro na busca ou se retornou algum usuário já cadastrado com este email, caso contrario tenta cadastrar
-        if(erro) return res.send({ error: 'Erro ao buscar usuário!' });
-        if(data) return res.send({ error: 'Usuário já registrado!' });
+    try {
+        if(await Usuarios.findOne({email}))
+            return res.send({ error: 'Usuário já registrado!' });
+        
+        const usuario = await Usuarios.create(req.body);
+        usuario.senha = undefined;
+        return res.send(usuario);
 
-        //pode ser reescrito para Usuarios.create({req.body}); pois o corpo só terá essas informações
-        Usuarios.create({email: email, senha: senha}, (erro, data) => {
-            if(erro) return res.send({ error: 'Erro ao criar Usuário'});
-            data.senha = undefined;//tirando a senha para não devolver ao criar novo usuario
-            return res.send(data);
-        });
-    });
+    } catch (erro) {
+        return res.send({ error: 'Erro ao buscar usuário!' });
+    }
 });
 
-rota.post('/auth', (req, res) => {
+rota.post('/auth', async (req, res) => {
     const {email, senha} = req.body;
 
     if(!email || !senha) return res.send({error: 'Dados insuficientes'});
 
-    Usuarios.findOne({email}, (erro, data) => {
-        if(erro) return res.send({error: 'Erro ao buscar Usuário'});
-        if(!data) return res.send({error: 'Usuário não registrado'});
+    try {
+        const usuario = await Usuarios.findOne({email}).select('+senha');
+        if(!usuario) return res.send({error: 'Usuário não registrado'});
 
-        bcrypt.compare(senha, data.senha, (erro, same) => {
-            if(!same) return res.send({error: 'Erro ao autenticar usuario'});
-            data.senha = undefined;
-            return res.send(data);
-        })
-    }).select('+senha');// para que ele devolva a senha que está no BD no "data" para que possa ser comparada a senha passada na requisição, pois no model de Usuario a senha não será retornada por default em select
+        const senha_ok = await bcrypt.compare(senha, usuario.senha);
+        if(!senha_ok) return res.send({error: 'Erro ao autenticar usuario'});
+        usuario.senha = undefined;
+        return res.send(usuario);
+    } catch (erro) {
+        return res.send({error: 'Erro ao buscar Usuário'});
+    }
 });
 
 module.exports = rota;
