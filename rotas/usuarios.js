@@ -1,6 +1,7 @@
 const express = require('express');
 const rota = express.Router();
 const Usuarios = require('../model/usuarios');
+const bcrypt = require('bcrypt');
 
 rota.get('/', (req, res) => {
     Usuarios.find({}, (erro, data) => {
@@ -27,6 +28,23 @@ rota.post('/criar', (req, res) => {
             return res.send(data);
         });
     });
+});
+
+rota.post('/auth', (req, res) => {
+    const {email, senha} = req.body;
+
+    if(!email || !senha) return res.send({error: 'Dados insuficientes'});
+
+    Usuarios.findOne({email}, (erro, data) => {
+        if(erro) return res.send({error: 'Erro ao buscar Usuário'});
+        if(!data) return res.send({error: 'Usuário não registrado'});
+
+        bcrypt.compare(senha, data.senha, (erro, same) => {
+            if(!same) return res.send({error: 'Erro ao autenticar usuario'});
+            data.senha = undefined;
+            return res.send(data);
+        })
+    }).select('+senha');// para que ele devolva a senha que está no BD no "data" para que possa ser comparada a senha passada na requisição, pois no model de Usuario a senha não será retornada por default em select
 });
 
 module.exports = rota;
