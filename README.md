@@ -1,1 +1,1 @@
-Estudo nodejs, express e mongo
+Repositório destinado aos estudos de NodeJS, Express e Mongo
