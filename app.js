@@ -2,11 +2,12 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const config = require('./config/config');
 
 
 
+const url = config.bd_string;
 
-const url = 'mongodb+srv://usuario_admin:nMFRT0Ee7dfpynoe@clusterapi-vyx1s.mongodb.net/test?retryWrites=true&w=majority';
 const opcoes = { 
     useUnifiedTopology: true, //falhas mais rápidas e mapeadas de maneira melhorada
     useNewUrlParser: true //versao atualizada que sera incorporada automaticamente futuramente

@@ -1,1 +1,1 @@
-Repositório destinado aos estudos de NodeJS, Express e Mongo
+Repositório destinado ao estudo de NodeJS, Express e Mongo com o curso: https://www.udemy.com/course/curso-basico-de-apis-com-nodejs-express-mongodb/
