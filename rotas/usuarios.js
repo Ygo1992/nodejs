@@ -3,10 +3,11 @@ const rota = express.Router();
 const Usuarios = require('../model/usuarios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const config = require('../config/config');
+//const config = require('../config/config');
+require('dotenv').config();
 
 const criarTokenUsuario = (idUsuario) => {
-    return jwt.sign({id: idUsuario}, config.jwt_pass, { expiresIn: config.jwt_expires});
+    return jwt.sign({id: idUsuario}, process.env.APP_DB_JWT_TOKEN, { expiresIn: process.env.APP_DB_JWT_EXPIRES_IN});
 }
 
 rota.get('/', async (req, res) => {
