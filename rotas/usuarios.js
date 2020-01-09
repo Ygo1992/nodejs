@@ -12,6 +12,9 @@ const criarTokenUsuario = (idUsuario) => {
 rota.get('/', async (req, res) => {
     try {
         const usuarios = await Usuarios.find({});
+        Usuarios.countDocuments({}, (error, count) => {
+            console.log('Quantidade ' + count);
+        });
         return res.send(usuarios);
     } catch (erro) {
         return res.status(500).send({ error: 'Erro ao buscar usuarios'});
@@ -28,6 +31,11 @@ rota.post('/criar', async (req, res) => {
         if(await Usuarios.findOne({email}))
             return res.send({ error: 'Usuário já registrado!' });
         
+        const cod_inc = await Usuarios.countDocuments({}, (error, count) => {
+            return count + 1
+        });
+        req.body.cod_inc = cod_inc;
+
         const usuario = await Usuarios.create(req.body);
         usuario.senha = undefined;
         return res.status(201).send({usuario, token: criarTokenUsuario(usuario.id)});

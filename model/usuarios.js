@@ -10,7 +10,8 @@ const UsuarioSchema = new Schema({
     email: { type: String, required: true, unique: true, lowercase: true },
     senha: { type: String,  required: true, select: false },
     data_criacao: { type: Date, default: Date.now },
-    cod: {type: Number, default: 1}
+    cod: {type: Number, default: 1},
+    cod_inc: {type: Number}
 });
 
 UsuarioSchema.plugin(autoIncrement.mongoosePlugin);
