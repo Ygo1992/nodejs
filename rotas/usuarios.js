@@ -33,7 +33,7 @@ rota.post('/criar', async (req, res) => {
         return res.status(201).send({usuario, token: criarTokenUsuario(usuario.id)});
 
     } catch (erro) {
-        return res.status(500).send({ error: 'Erro ao buscar usuário!' });
+        return res.status(500).send({ error: 'Erro ao buscar usuário!' + erro });
     }
 });
 
